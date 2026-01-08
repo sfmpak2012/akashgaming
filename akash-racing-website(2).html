@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akash Gaming - Race Fast. Drift Hard. Win Big.</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@700;900&family=Russo+One&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: rgba(10, 14, 39, 0.95);
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #ff6b35;
+        }
+        
+        .logo {
+            font-family: 'Russo One', sans-serif;
+            font-size: 2em;
+            background: linear-gradient(45deg, #ff6b35, #f7931e, #ffdd00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        nav a:hover {
+            color: #ff6b35;
+            transform: scale(1.1);
+        }
+        
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            position: relative;
+            overflow: hidden;
+            margin-top: 80px;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+        
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .hero-content {
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-family: 'Russo One', sans-serif;
+            font-size: 5em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.8),
+                         0 0 40px rgba(255, 107, 53, 0.5);
+        }
+        
+        .hero p {
+            font-size: 2em;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+        
+        .btn-play {
+            padding: 20px 60px;
+            font-size: 1.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.5);
+            font-family: 'Russo One', sans-serif;
+        }
+        
+        .btn-play:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.8);
+        }
+        
+        section {
+            padding: 100px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: 'Russo One', sans-serif;
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 60px;
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        
+        #game {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 20px;
+            padding: 50px;
+            margin: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .game-container {
+            position: relative;
+        }
+        
+        #gameCanvas {
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            background: linear-gradient(180deg, #87CEEB 0%, #F0E68C 70%, #F4A460 100%);
+            border-radius: 15px;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-controls {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.2em;
+        }
+        
+        .game-controls p {
+            margin: 10px 0;
+            color: #ffdd00;
+            font-weight: bold;
+        }
+        
+        .game-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px 60px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            z-index: 10;
+            border: 3px solid #ff6b35;
+        }
+        
+        .game-overlay.active {
+            display: block;
+            animation: popIn 0.5s ease-out;
+        }
+        
+        @keyframes popIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .game-overlay h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            font-family: 'Russo One', sans-serif;
+        }
+        
+        .game-overlay.win h2 {
+            color: #00ff00;
+        }
+        
+        .game-overlay.lose h2 {
+            color: #ff0000;
+        }
+        
+        .restart-btn {
+            padding: 15px 40px;
+            font-size: 1.3em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            font-family: 'Russo One', sans-serif;
+        }
+        
+        .restart-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #ff6b35;
+            box-shadow: 0 20px 40px rgba(255, 107, 53, 0.3);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #ff6b35;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .gallery-item {
+            height: 250px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.5);
+        }
+        
+        .gallery-item::before {
+            content: attr(data-label);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .g1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .g2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .g3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .g4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .g5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .g6 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+        
+        #about {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+        }
+        
+        #about p {
+            font-size: 1.3em;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .social-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .social-btn:hover {
+            transform: scale(1.2) rotate(360deg);
+        }
+        
+        .youtube {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.5);
+        }
+        
+        .instagram {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            box-shadow: 0 5px 20px rgba(225, 48, 108, 0.5);
+        }
+        
+        .discord {
+            background: linear-gradient(45deg, #7289da, #5865f2);
+            box-shadow: 0 5px 20px rgba(114, 137, 218, 0.5);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            background: rgba(10, 14, 39, 0.95);
+            border-top: 2px solid #ff6b35;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .logo {
+                font-size: 1.5em;
+            }
+            
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            nav a {
+                margin: 5px 10px;
+                font-size: 0.9em;
+            }
+            
+            .hero h1 {
+                font-size: 2.5em;
+            }
+            
+            .hero p {
+                font-size: 1.2em;
+            }
+            
+            .btn-play {
+                padding: 15px 40px;
+                font-size: 1.2em;
+            }
+            
+            section {
+                padding: 60px 20px;
+            }
+            
+            #game {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+            
+            #gameCanvas {
+                height: 400px;
+            }
+            
+            .section-title {
+                font-size: 2em;
+            }
+            
+            .game-overlay {
+                padding: 30px 40px;
+            }
+            
+            .game-overlay h2 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">⚡ AKASH GAMING</div>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#game">Play</a>
+            <a href="#features">Features</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>🏎️ AKASH GAMING</h1>
+            <p>Race Fast. Drift Hard. Win Big.</p>
+            <button class="btn-play" onclick="document.getElementById('game').scrollIntoView({behavior: 'smooth'})">
+                🎮 PLAY NOW
+            </button>
+        </div>
+    </section>
+
+    <section id="game">
+        <h2 class="section-title">🏁 BEACH BUGGY RACING</h2>
+        <div class="game-container">
+            <canvas id="gameCanvas"></canvas>
+            <div class="game-overlay" id="gameOverlay">
+                <h2 id="resultText"></h2>
+                <p id="resultMessage" style="font-size: 1.5em; margin: 20px 0;"></p>
+                <button class="restart-btn" onclick="restartGame()">🔄 RACE AGAIN</button>
+            </div>
+        </div>
+        <div class="game-controls">
+            <p>🎮 Controls: Arrow Keys ← → to Steer | ↑ for Turbo Boost</p>
+            <p>⚡ Collect Power-ups! | 🎯 Avoid Obstacles! | 🏁 Be the First to Finish!</p>
+            <p id="score">Distance: 0m | Position: 1st</p>
+        </div>
+    </section>
+
+    <section id="features">
+        <h2 class="section-title">🌟 AMAZING FEATURES</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🏖️</div>
+                <h3>Colorful Tracks</h3>
+                <p>Race through stunning beach environments with palm trees and tropical vibes!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚗</div>
+                <h3>Custom Cars</h3>
+                <p>Choose from awesome cartoon-style racing cars with unique abilities!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Power-ups & Boosts</h3>
+                <p>Grab speed boosts, shields, and mega power-ups to dominate!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Opponents</h3>
+                <p>Race against smart AI competitors in thrilling matches!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎮</div>
+                <h3>Smooth Controls</h3>
+                <p>Easy-to-learn controls perfect for players of all skill levels!</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery">
+        <h2 class="section-title">📸 GAME GALLERY</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item g1" data-label="🏖️ Beach Paradise Track"></div>
+            <div class="gallery-item g2" data-label="🚗 Racing Cars Collection"></div>
+            <div class="gallery-item g3" data-label="⚡ Power-up Madness"></div>
+            <div class="gallery-item g4" data-label="🌴 Tropical Environment"></div>
+            <div class="gallery-item g5" data-label="🏁 Epic Racing Action"></div>
+            <div class="gallery-item g6" data-label="🎮 Multiplayer Mayhem"></div>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2 class="section-title">🎯 ABOUT AKASH GAMING</h2>
+        <p>
+            Akash Gaming is your destination for high-energy, arcade-style racing action! 
+            Inspired by the colorful and fun world of Beach Buggy Racing, we bring you 
+            cartoon-style 3D racing with vibrant tracks, crazy power-ups, and non-stop excitement. 
+            Our mission is to create games that are fun, accessible, and perfect for players 
+            of all ages. Join the racing revolution and experience the thrill of victory! 🏆
+        </p>
+    </section>
+
+    <section id="contact">
+        <h2 class="section-title">🌐 CONNECT WITH US</h2>
+        <div class="social-links">
+            <a href="#" class="social-btn youtube">▶️</a>
+            <a href="#" class="social-btn instagram">📷</a>
+            <a href="#" class="social-btn discord">💬</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Akash Gaming. All Rights Reserved. Race On! 🏁</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+
+        let gameState = 'playing';
+        let score = 0;
+        let raceDistance = 0;
+        const FINISH_LINE = 5000;
+        let gameSpeed = 3;
+        let carX = canvas.width / 2;
+        let carY = canvas.height - 150;
+        let carWidth = 50;
+        let carHeight = 80;
+        let keys = {};
+        let obstacles = [];
+        let powerups = [];
+        let palmTrees = [];
+        let clouds = [];
+        let aiCars = [];
+        let playerPosition = 1;
+        
+        // Power-up effects
+        let activeEffects = {
+            boost: 0,
+            shield: 0,
+            invincible: 0,
+            magnet: 0
+        };
+
+        // Initialize AI cars
+        function initAICars() {
+            const colors = ['#ff0000', '#0000ff', '#00ff00', '#ffff00', '#ff00ff'];
+            const names = ['Speedy', 'Turbo', 'Flash', 'Rocket', 'Blaze'];
+            
+            for (let i = 0; i < 3; i++) {
+                aiCars.push({
+                    x: 150 + i * 150,
+                    y: carY - 100 - Math.random() * 200,
+                    distance: 100 + Math.random() * 200,
+                    speed: 3 + Math.random() * 1.5,
+                    color: colors[i],
+                    name: names[i],
+                    width: 50,
+                    height: 80
+                });
+            }
+        }
+
+        // Initialize environment
+        function initEnvironment() {
+            for (let i = 0; i < 8; i++) {
+                palmTrees.push({
+                    x: Math.random() < 0.5 ? Math.random() * 100 : canvas.width - Math.random() * 100,
+                    y: Math.random() * canvas.height,
+                    size: 30 + Math.random() * 20
+                });
+            }
+
+            for (let i = 0; i < 5; i++) {
+                clouds.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * 150,
+                    size: 40 + Math.random() * 30,
+                    speed: 0.5 + Math.random()
+                });
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === 'ArrowUp' && activeEffects.boost === 0) {
+                activeEffects.boost = 60;
+            }
+        });
+        document.addEventListener('keyup', (e) => keys[e.key] = false);
+
+        function drawCar(x, y, color, width, height, isPlayer = false) {
+            // Shield effect
+            if (isPlayer && activeEffects.shield > 0) {
+                ctx.strokeStyle = 'rgba(0, 212, 255, 0.6)';
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.arc(x, y + height/2, width, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Car body
+            ctx.fillStyle = activeEffects.boost > 0 && isPlayer ? '#ff00ff' : color;
+            ctx.fillRect(x - width/2, y, width, height);
+            
+            // Windshield
+            ctx.fillStyle = '#00d4ff';
+            ctx.fillRect(x - width/2 + 5, y + 10, width - 10, 30);
+            
+            // Wheels
+            ctx.fillStyle = '#333';
+            ctx.fillRect(x - width/2 - 5, y + 15, 8, 15);
+            ctx.fillRect(x + width/2 - 3, y + 15, 8, 15);
+            ctx.fillRect(x - width/2 - 5, y + 50, 8, 15);
+            ctx.fillRect(x + width/2 - 3, y + 50, 8, 15);
+            
+            // Boost effect
+            if (activeEffects.boost > 0 && isPlayer) {
+                ctx.fillStyle = '#ffdd00';
+                ctx.fillRect(x - width/2 + 10, y + height, 10, 20);
+                ctx.fillRect(x + width/2 - 20, y + height, 10, 20);
+            }
+        }
+
+        function drawPalmTree(tree) {
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(tree.x - 5, tree.y, 10, tree.size);
+            ctx.fillStyle = '#228B22';
+            ctx.beginPath();
+            ctx.arc(tree.x, tree.y, tree.size * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawCloud(cloud) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(cloud.x, cloud.y, cloud.size, 0, Math.PI * 2);
+            ctx.arc(cloud.x + cloud.size * 0.5, cloud.y, cloud.size * 0.7, 0, Math.PI * 2);
+            ctx.arc(cloud.x - cloud.size * 0.5, cloud.y, cloud.size * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawObstacle(obs) {
+            ctx.fillStyle = '#696969';
+            ctx.beginPath();
+            ctx.arc(obs.x, obs.y, obs.width/2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#A9A9A9';
+            ctx.beginPath();
+            ctx.arc(obs.x - 5, obs.y - 5, obs.width/3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawPowerup(pow) {
+            const icons = {
+                speed: '⚡',
+                shield: '🛡️',
+                mega: '⭐',
+                magnet: '🧲'
+            };
+            
+            const colors = {
+                speed: '#ffdd00',
+                shield: '#00d4ff',
+                mega: '#ff00ff',
+                magnet: '#00ff00'
+            };
+            
+            ctx.fillStyle = colors[pow.type];
+            ctx.strokeStyle = '#ff6b35';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(pow.x, pow.y, pow.width/2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.font = 'bold 25px Arial';
+            ctx.fillText(icons[pow.type], pow.x - 12, pow.y + 10);
+        }
+
+        function drawFinishLine(y) {
+            for (let i = 0; i < canvas.width; i += 40) {
+                ctx.fillStyle = i % 80 === 0 ? '#000' : '#fff';
+                ctx.fillRect(i, y, 40, 20);
+            }
+            ctx.fillStyle = '#ff6b35';
+            ctx.font = 'bold 30px Arial';
+            ctx.fillText('FINISH', canvas.width/2 - 50, y + 50);
+        }
+
+        function updateAICars() {
+            aiCars.forEach(ai => {
+                ai.distance += ai.speed;
+                ai.y = carY - (ai.distance - raceDistance);
+                
+                // Simple AI dodging
+                if (Math.random() < 0.02) {
+                    ai.x += (Math.random() - 0.5) * 10;
+                    ai.x = Math.max(100, Math.min(canvas.width - 100, ai.x));
+                }
+            });
+            
+            // Calculate position
+            let ahead = aiCars.filter(ai => ai.distance > raceDistance).length;
+            playerPosition = ahead + 1;
+        }
+
+        function checkWinCondition() {
+            if (raceDistance >= FINISH_LINE && gameState === 'playing') {
+                gameState = 'finished';
+                const overlay = document.getElementById('gameOverlay');
+                const resultText = document.getElementById('resultText');
+                const resultMessage = document.getElementById('resultMessage');
+                
+                if (playerPosition === 1) {
+                    overlay.className = 'game-overlay win active';
+                    resultText.textContent = '🏆 YOU WIN! 🏆';
+                    resultMessage.textContent = `Congratulations! You finished 1st place with ${score} points!`;
+                } else {
+                    overlay.className = 'game-overlay lose active';
+                    resultText.textContent = '😢 TRY AGAIN!';
+                    resultMessage.textContent = `You finished ${playerPosition}${getOrdinalSuffix(playerPosition)} place. Keep racing!`;
+                }
+            }
+        }
+
+        function getOrdinalSuffix(num) {
+            const j = num % 10;
+            const k = num % 100;
+            if (j === 1 && k !== 11) return 'st';
+            if (j === 2 && k !== 12) return 'nd';
+            if (j === 3 && k !== 13) return 'rd';
+            return 'th';
+        }
+
+        function update() {
+            if (gameState !== 'playing') return;
+            
+            // Move car
+            if (keys['ArrowLeft'] && carX > carWidth + 50) carX -= 5;
+            if (keys['ArrowRight'] && carX < canvas.width - carWidth - 50) carX += 5;
+            
+            // Update effects
+            Object.keys(activeEffects).forEach(effect => {
+                if (activeEffects[effect] > 0) {
+                    activeEffects[effect]--;
+                }
+            });
+            
+            // Boost handling
+            if (activeEffects.boost > 0) {
+                gameSpeed = 8;
+            } else {
+                gameSpeed = 3;
+            }
+            
+            raceDistance += gameSpeed;
+
+            // Update environment
+            clouds.forEach(cloud => {
+                cloud.y += cloud.speed;
+                if (cloud.y > canvas.height) {
+                    cloud.y = -50;
+                    cloud.x = Math.random() * canvas.width;
+                }
+            });
+
+            palmTrees.forEach(tree => {
+                tree.y += gameSpeed;
+                if (tree.y > canvas.height) {
+                    tree.y = -tree.size;
+                    tree.x = Math.random() < 0.5 ? Math.random() * 100 : canvas.width - Math.random() * 100;
+                }
+            });
+
+            // Spawn obstacles
+            if (Math.random() < 0.015 && obstacles.length < 5) {
+                obstacles.push({
+                    x: 100 + Math.random() * (canvas.width - 200),
+                    y: -30,
+                    width: 40
+                });
+            }
+
+            // Spawn powerups
+            if (Math.random() < 0.012 && powerups.length < 3) {
+                const types = ['speed', 'shield', 'mega', 'magnet'];
+                powerups.push({
+                    x: 100 + Math.random() * (canvas.width - 200),
+                    y: -30,
+                    width: 30,
+                    type: types[Math.floor(Math.random() * types.length)]
+                });
+            }
+
+            // Update obstacles
+            obstacles = obstacles.filter((obs, index) => {
+                obs.y += gameSpeed;
+                
+                if (activeEffects.shield === 0 && activeEffects.invincible === 0) {
+                    if (obs.y > carY && obs.y < carY + carHeight &&
+                        obs.x > carX - carWidth/2 && obs.x < carX + carWidth/2) {
+                        score = Math.max(0, score - 50);
+                        return false;
+                    }
+                }
+                
+                if (obs.y > canvas.height) {
+                    score += 10;
+                    return false;
+                }
+                return true;
+            });
+
+            // Update powerups
+            powerups = powerups.filter((pow, index) => {
+                pow.y += gameSpeed;
+                
+                const collectRange = activeEffects.magnet > 0 ? 80 : 40;
+                if (pow.y > carY - collectRange && pow.y < carY + carHeight + collectRange &&
+                    pow.x > carX - carWidth/2 - collectRange && pow.x < carX + carWidth/2 + collectRange) {
+                    
+                    switch(pow.type) {
+                        case 'speed':
+                            activeEffects.boost = 80;
+                            score += 50;
+                            break;
+                        case 'shield':
+                            activeEffects.shield = 180;
+                            score += 75;
+                            break;
+                        case 'mega':
+                            activeEffects.boost = 120;
+                            activeEffects.invincible = 120;
+                            score += 150;
+                            break;
+                        case 'magnet':
+                            activeEffects.magnet = 200;
+                            score += 100;
+                            break;
+                    }
+                    return false;
+                }
+                
+                return pow.y <= canvas.height;
+            });
+
+            updateAICars();
+            checkWinCondition();
+
+            const positionText = playerPosition === 1 ? '1st 🥇' : 
+                                playerPosition === 2 ? '2nd 🥈' : 
+                                playerPosition === 3 ? '3rd 🥉' : `${playerPosition}th`;
+            document.getElementById('score').textContent = 
+                `Distance: ${Math.floor(raceDistance)}m / ${FINISH_LINE}m | Score: ${score} | Position: ${positionText}`;
+        }
+
+        function draw() {
+            // Sky gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.7, '#F0E68C');
+            gradient.addColorStop(1, '#F4A460');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            clouds.forEach(drawCloud);
+
+            // Road
+            ctx.fillStyle = '#808080';
+            ctx.fillRect(50, 0, canvas.width - 100, canvas.height);
+            
+            // Road lines
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 5;
+            for (let i = -50; i < canvas.height; i += 60) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, i + (raceDistance % 60));
+                ctx.lineTo(canvas.width / 2, i + 30 + (raceDistance % 60));
+                ctx.stroke();
+            }
+
+            // Draw finish line
+            const finishY = carY - (FINISH_LINE - raceDistance);
+            if (finishY > -100 && finishY < canvas.height) {
+                drawFinishLine(finishY);
+            }
+
+            palmTrees.forEach(drawPalmTree);
+
+            // Draw AI cars
+            aiCars.forEach(ai => {
+                if (ai.y > -100 && ai.y < canvas.height + 100) {
+                    drawCar(ai.x, ai.y, ai.color, ai.width, ai.height, false);
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillText(ai.name, ai.x - 20, ai.y - 10);
+                }
+            });
+
+            obstacles.forEach(drawObstacle);
+            powerups.forEach(drawPowerup);
+            drawCar(carX, carY, '#ff6b35', carWidth, carHeight, true);
+            
+            // Power-up indicators
+            let indicatorY = 20;
+            if (activeEffects.boost > 0) {
+                ctx.fillStyle = 'rgba(255, 221, 0, 0.8)';
+                ctx.fillRect(10, indicatorY, 100, 30);
+                ctx.fillStyle = 'black';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('⚡ BOOST', 15, indicatorY + 20);
+                indicatorY += 35;
+            }
+            if (activeEffects.shield > 0) {
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.8)';
+                ctx.fillRect(10, indicatorY, 100, 30);
+                ctx.fillStyle = 'black';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('🛡️ SHIELD', 15, indicatorY + 20);
+                indicatorY += 35;
+            }
+            if (activeEffects.magnet > 0) {
+                ctx.fillStyle = 'rgba(0, 255, 0, 0.8)';
+                ctx.fillRect(10, indicatorY, 100, 30);
+                ctx.fillStyle = 'black';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('🧲 MAGNET', 15, indicatorY + 20);
+            }
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function restartGame() {
+            gameState = 'playing';
+            score = 0;
+            raceDistance = 0;
+            carX = canvas.width / 2;
+            obstacles = [];
+            powerups = [];
+            activeEffects = { boost: 0, shield: 0, invincible: 0, magnet: 0 };
+            aiCars = [];
+            initAICars();
+            document.getElementById('gameOverlay').classList.remove('active');
+        }
+
+        initEnvironment();
+        initAICars();
+        gameLoop();
+    </script>
+</body>
+</html>
